@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="一个简单、轻量的文件分享站点。">
+    <title>云盘 - 文件分享</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="./" aria-label="云盘首页">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M8.1 22.8h15.1a5.15 5.15 0 0 0 .46-10.28A8 8 0 0 0 8.34 14.3a4.28 4.28 0 0 0-.24 8.5Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="m12.5 17.2 3.5-3.5 3.5 3.5M16 13.9v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>云盘<span class="brand-subtitle">CLOUD DRIVE</span></span>
+        </a>
+
+        <div class="sidebar-label">空间</div>
+        <nav class="sidebar-nav" aria-label="文件夹">
+          <button class="nav-item is-active" id="all-files-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6l2 2h8v11H4z"/><path d="M4 9h16"/></svg>
+            <span>全部文件</span>
+            <span class="nav-count" id="file-count">0</span>
+          </button>
+          <div class="sidebar-label folder-label">文件夹</div>
+          <div id="folder-nav" class="folder-nav"></div>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="storage-card">
+            <div class="storage-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 9h16M8 15h.01M12 15h.01"/></svg>
+            </div>
+            <div>
+              <strong>文件存储</strong>
+              <p>由 GitHub 仓库提供</p>
+            </div>
+          </div>
+          <p class="sidebar-note">此站点中的公开文件，任何人都可以下载。</p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div class="mobile-brand">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none"><path d="M8.1 22.8h15.1a5.15 5.15 0 0 0 .46-10.28A8 8 0 0 0 8.34 14.3a4.28 4.28 0 0 0-.24 8.5Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="m12.5 17.2 3.5-3.5 3.5 3.5M16 13.9v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <strong>云盘</strong>
+          </div>
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 4.2 4.2"/></svg>
+            <input id="search-input" type="search" placeholder="搜索文件或文件夹" autocomplete="off" aria-label="搜索文件或文件夹">
+            <kbd>/</kbd>
+          </label>
+          <a class="manage-button" id="manage-link" href="#" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v8m-4-4h8"/><circle cx="12" cy="12" r="9"/></svg>
+            <span>管理文件</span>
+          </a>
+        </header>
+
+        <section class="content">
+          <div class="page-heading">
+            <div>
+              <div class="eyebrow">你的文件空间</div>
+              <h1 id="page-title">全部文件</h1>
+              <p class="page-description" id="page-description">在一个地方浏览和下载共享文件。</p>
+            </div>
+            <div class="heading-badge"><span class="status-dot"></span>公开分享</div>
+          </div>
+
+          <div class="toolbar">
+            <nav class="breadcrumbs" id="breadcrumbs" aria-label="当前位置"></nav>
+            <label class="sort-control">
+              <span>排序</span>
+              <select id="sort-select" aria-label="文件排序">
+                <option value="name-asc">名称 A-Z</option>
+                <option value="name-desc">名称 Z-A</option>
+                <option value="size-desc">文件大小</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="error-message" class="notice error-notice" role="alert" hidden></div>
+          <div class="file-panel">
+            <div class="file-list-header">
+              <span>名称</span>
+              <span>大小</span>
+              <span class="header-action">操作</span>
+            </div>
+            <div id="file-list" class="file-list" aria-live="polite"></div>
+            <div id="empty-state" class="empty-state" hidden>
+              <div class="empty-illustration" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none"><path d="M12 21a4 4 0 0 1 4-4h12l5 5h15a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M12 28h40" stroke="currentColor" stroke-width="2.5"/></svg>
+              </div>
+              <h2 id="empty-title">这里还没有文件</h2>
+              <p id="empty-description">文件管理员可以将文件添加到 GitHub 仓库的 storage 文件夹。</p>
+              <a class="empty-manage-link" id="empty-manage-link" href="#" target="_blank" rel="noopener noreferrer">前往仓库管理文件 <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <footer class="page-footer">
+            <span id="results-summary">正在读取文件列表…</span>
+            <span>简单分享，随时取用 <span class="footer-sparkle" aria-hidden="true">✦</span></span>
+          </footer>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
